@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"messanger-backend/controllers"
+	"messenger-backend/controllers"
 )
 
 func RegisterRoutes(router *gin.Engine) {
