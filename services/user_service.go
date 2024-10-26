@@ -2,7 +2,7 @@ package services
 
 import (
 	"messenger-backend/models"
-	"messenger-backend/data-access/dataaccess"
+	"messenger-backend/data-access"
 	"errors"
 )
 
@@ -22,7 +22,7 @@ func GetUserByEmail(email string) (models.User, error) {
 
 // GetUserById: Fetches a user by their ID
 func GetUserById(userID uint) (models.User, error) {
-	user, err := dataaccess.FindUserByEmail(userId)
+	user, err := dataaccess.FindUserByID(userID)
 	if err != nil {
 		return models.User{}, errors.New("user not found")
 	}

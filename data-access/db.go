@@ -6,10 +6,11 @@ import (
   "github.com/joho/godotenv"
 	"database/sql"
 	"errors"
+	"log"
 	_ "github.com/lib/pq"
 )
 
-var db *sql.db
+var db *sql.DB
 
 func Init() {
   err := godotenv.Load()
@@ -20,6 +21,8 @@ func Init() {
 
 // InitializeDB: Initializes the PostgreSQL connection
 func InitializeDB() error {
+	Init()
+
   connectionString := os.Getenv("DB_URL")
 	var err error
 	db, err = sql.Open("postgres", connectionString)
@@ -55,10 +58,10 @@ func FindUserByEmail(email string) (models.User, error) {
 }
 
 // FindUserByID: Finds a user by their ID
-func FindUserByID(userID uint) (models.user, error) {
+func FindUserByID(userID uint) (models.User, error) {
 	var user models.User
 	query := `SELECT id, username, email, password_hash, avatar_url, created_at, updated_at FROM users WHERE id = $1`
-	err := db.QueryRow(query, userId).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt)
+	err := db.QueryRow(query, userID).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return user, errors.New("user not found")

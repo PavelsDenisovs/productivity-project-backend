@@ -1,9 +1,10 @@
 package main
+
 import (
-	"github.com/gin-gonic/gin"
-	"messenger-backend/routes"
-	"messenger-backend/data-access"
 	"log"
+	"messenger-backend/data-access"
+	"messenger-backend/routes"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -17,7 +18,7 @@ func main() {
 	router := gin.Default()
 
 	// Register routes
-	router.RegisterRoutes(router)
+	routes.RegisterRoutes(router)
 
 	// Start the server
 	router.Run(":8080")
