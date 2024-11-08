@@ -62,6 +62,10 @@ func Register(c *gin.Context) {
 	// Use the service layer to create the user
 	err = services.CreateUser(user)
 	if err != nil {
+		if strings.Contains(err.Error(), "unique constaint") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return
 	}
