@@ -57,6 +57,20 @@ func FindUserByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
+// FindUserByUsername: Finds a user by their username
+func FindUserByUsername(username string) (models.User, error) {
+	var user models.User
+	query := `SELECT id, username, email, password_hash, avatar_url, created_at, updated_at FROM users WHERE email = $1`
+	err := db.QueryRow(query, username).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, errors.New("user not found")
+		}
+		return user, err
+	}
+	return user, nil
+}
+
 // FindUserByID: Finds a user by their ID
 func FindUserByID(userID uint) (models.User, error) {
 	var user models.User

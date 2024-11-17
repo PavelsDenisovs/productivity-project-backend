@@ -29,3 +29,24 @@ func GetUserById(userID uint) (models.User, error) {
 	return user, nil
 }
 
+func IsEmailInUse(email string) (bool, error) {
+	_, err := dataaccess.FindUserByEmail(email)
+	if err != nil {
+		if err.Error() == "user not found" {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func IsUsernameInUse(username string) (bool, error) {
+ _, err := dataaccess.FindUserByUsername(username)
+ if err != nil {
+	if err.Error() == "user not found" {
+		return false, nil
+	}
+	return false, err
+ }
+ return false, nil
+}

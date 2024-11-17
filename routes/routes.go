@@ -8,6 +8,7 @@ import (
 func RegisterRoutes(router *gin.Engine) {
 	userGroup := router.Group("/user")
 	{
+		userGroup.POST("/validate", controllers.Validate)
 		userGroup.POST("/register", controllers.Register)
 		userGroup.POST("/login", controllers.Login)
 		userGroup.GET("/profile", controllers.Profile)
