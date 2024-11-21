@@ -8,7 +8,10 @@ import (
 )
 
 type ValidationRequest struct {
-	Fields []utils.FieldValidationRequest `json:"fields"`
+	DisplayName string `json:"displayName,omitempty"`
+  Email       string `json:"email,omitempty"`
+  Username    string `json:"username,omitempty"`
+  Password    string `json:"password,omitempty"`
 }
 
 func Validate(c *gin.Context) {
@@ -18,30 +21,49 @@ func Validate(c *gin.Context) {
 		return
 	}
 
-	errors := utils.ValidateFields(req.Fields)
+	errors := make(map[string]string)
 
-	for _, field := range req.Fields {
-		if field.FieldName == "email" && errors[field.FieldName] == "" {
-			exists, err := services.IsEmailInUse(field.Value)
+  if req.DisplayName != "" {
+    if msg := utils.ValidateDisplayName(req.DisplayName); msg != "" {
+      errors["displayName"] = msg
+    }
+  }
+
+  if req.Email != "" {
+    if msg := utils.ValidateEmail(req.Email); msg != "" {
+      errors["email"] = msg
+    } else {
+      exists, err := services.IsEmailInUse(req.Email)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 				return
 			}
 			if exists {
-				errors[field.FieldName] = "Email is already in use"
+				errors["email"] = "Email is already in use"
 			}
-		}
-		if field.FieldName == "username" && errors[field.FieldName] == "" {
-			exists, err := services.IsUsernameInUse(field.Value)
+    }
+  }
+
+  if req.Username != "" {
+    if msg := utils.ValidateUsername(req.Username); msg != "" {
+      errors["username"] = msg
+    } else {
+      exists, err := services.IsUsernameInUse(req.Username)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 				return
 			}
 			if exists {
-				errors[field.FieldName] = "Username is already in user"
+				errors["username"] = "Username is already in use"
 			}
-		}
-	}
+    }
+  }
+
+  if req.Password != "" {
+    if msg := utils.ValidatePassword(req.Password); msg != "" {
+      errors["password"] = msg
+    }
+  }
 
 	c.JSON(http.StatusOK, gin.H{"errors": errors})
 }

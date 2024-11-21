@@ -12,33 +12,7 @@ var (
   spacePattern       = regexp.MustCompile(`\s`)
 )
 
-type FieldValidationRequest struct {
-  FieldName string `json:"fieldName"`
-  Value     string `json:"value"`
-}
-
-func ValidateFields(fields []FieldValidationRequest) map[string]string {
-  errors := make(map[string]string)
-
-  for _, field := range fields {
-    switch field.FieldName {
-    case "displayName":
-      errors[field.FieldName] = validateDisplayName(field.Value)
-    case "email":
-      errors[field.FieldName] = validateEmail(field.Value)
-    case "username":
-      errors[field.FieldName] = validateUsername(field.Value)
-    case "password":
-      errors[field.FieldName] = validatePassword(field.Value)
-    default:
-      errors[field.FieldName] = "Unknown field"
-    }
-  }
-
-  return errors
-}
-
-func validateDisplayName(value string) string {
+func ValidateDisplayName(value string) string {
 	if value == "" {
 		return "Display name is required"
 	}
@@ -52,7 +26,7 @@ func validateDisplayName(value string) string {
 	return ""
 }
 
-func validateEmail(value string) string {
+func ValidateEmail(value string) string {
 	if value == "" {
 		return "Email is required"
 	}
@@ -64,7 +38,7 @@ func validateEmail(value string) string {
 	return ""
 }
 
-func validateUsername(value string) string {
+func ValidateUsername(value string) string {
 	if value == "" {
 		return "Username is required"
 	}
@@ -79,7 +53,7 @@ func validateUsername(value string) string {
 	return ""
 }
 
-func validatePassword(value string) string {
+func ValidatePassword(value string) string {
   if value == "" {
     return "Password is required"
   }

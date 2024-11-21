@@ -46,7 +46,7 @@ func SaveUser(user models.User) error {
 // FindUserByEmail: Finds a user by their email
 func FindUserByEmail(email string) (models.User, error) {
 	var user models.User
-	query := `SELECT id, username, email, password_hash, avatar_url, created_at, updated_at FROM user WHERE email = $1`
+	query := `SELECT id, username, email, password_hash, avatar_url, created_at, updated_at FROM users WHERE email = $1`
 	err := db.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
