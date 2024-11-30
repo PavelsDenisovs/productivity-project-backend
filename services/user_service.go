@@ -1,9 +1,15 @@
 package services
 
 import (
-	"messenger-backend/models"
-	"messenger-backend/data-access"
 	"errors"
+	"messenger-backend/data-access"
+	"messenger-backend/models"
+	"messenger-backend/utils"
+	"os"
+	"time"
+	"fmt"
+
+	"gopkg.in/gomail.v2"
 )
 
 // CreateUser: Creates a new user and saves it to the database
@@ -49,4 +55,39 @@ func IsUsernameInUse(username string) (bool, error) {
 	return false, err
  }
  return false, nil
+}
+
+func SendVerificationEmail(email string, code string) error {
+	gmailEmail := os.Getenv("GMAIL_EMAIL")
+	gmailPassword := os.Getenv("GMAIL_PASSWORD")
+	smtpServer := os.Getenv("SMTP_SERVER")
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", gmailEmail)
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", "Email Verification Code")
+	m.SetBody("text/plain", "Your verification code is: "+code)
+
+	d := gomail.NewDialer(smtpServer, 587, gmailEmail, gmailPassword)
+
+	return d.DialAndSend(m)
+}
+
+func ProcessVerification(email string) error {
+  code := utils.GenerateVerificationCode()
+
+  expiration := time.Now().Add(10 * time.Minute)
+  err := dataaccess.StoreVerificationCode(email, code, expiration)
+  if err != nil {
+    return errors.New("failed to store verification code123")
+  }
+
+	fmt.Printf("email: %v, code: %v", email, code)
+  err = SendVerificationEmail(email, code)
+  if err != nil {
+		fmt.Printf("%v", err)
+    return errors.New("failed to send verification code")
+  }
+
+  return nil
 }

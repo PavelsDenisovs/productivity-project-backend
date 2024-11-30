@@ -12,5 +12,7 @@ func RegisterRoutes(router *gin.Engine) {
 		userGroup.POST("/register", controllers.Register)
 		userGroup.POST("/login", controllers.Login)
 		userGroup.GET("/profile", controllers.Profile)
+		userGroup.POST("/send-verification", controllers.SendVerificationCode)
+		userGroup.POST("/verify-code", controllers.VerifyCode)
 	}
 }
