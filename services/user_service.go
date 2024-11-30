@@ -7,7 +7,6 @@ import (
 	"messenger-backend/utils"
 	"os"
 	"time"
-	"fmt"
 
 	"gopkg.in/gomail.v2"
 )
@@ -82,10 +81,8 @@ func ProcessVerification(email string) error {
     return errors.New("failed to store verification code123")
   }
 
-	fmt.Printf("email: %v, code: %v", email, code)
   err = SendVerificationEmail(email, code)
   if err != nil {
-		fmt.Printf("%v", err)
     return errors.New("failed to send verification code")
   }
 
