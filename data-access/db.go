@@ -14,10 +14,15 @@ import (
 var db *sql.DB
 
 func Init() {
-  err := godotenv.Load()
-  if err != nil {
-    log.Fatal("Error loading .env file")
-  }
+	env := os.Getenv("APP_ENV")
+	if env == "" {
+		env = "development"
+	}
+
+	envFile := ".env." + env
+  if err := godotenv.Load(envFile); err != nil {
+		log.Fatalf("Error loading %s file: %v", envFile, err)
+	}
 }
 
 // InitializeDB: Initializes the PostgreSQL connection
