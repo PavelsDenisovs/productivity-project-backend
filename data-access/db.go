@@ -40,9 +40,9 @@ func InitializeDB() error {
 
 // SaveUser: Inserts a new user into the database
 func SaveUser(user models.User) error {
-	query := `INSERT INTO users (username, email, password_hash, avatar_url, created_at, updated_at)
-						VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	err := db.QueryRow(query, user.Username, user.Email, user.PasswordHash, user.AvatarURL, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
+	query := `INSERT INTO users (username, display_name, email, password_hash, avatar_url, created_at, updated_at)
+						VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
+	err := db.QueryRow(query, user.Username, user.DisplayName, user.Email, user.PasswordHash, user.AvatarURL, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
 	if err != nil {
 		return err
 	}

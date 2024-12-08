@@ -12,10 +12,10 @@ import (
 )
 
 type RegisterRequest struct {
-	Username        string `json:"username" validate:"required"`
-	Email           string `json:"email" validate:"required,email"`
-	Password        string `json:"password" validate:"required"`
-	ConfirmPassword string `json:"confirmPassword" validate:"required"`
+	Email       string `json:"email" validate:"required,email"`
+	DisplayName string `json:"displayName" validate:"required"`
+	Username    string `json:"username" validate:"required"`
+	Password    string `json:"password" validate:"required"`
 }
 
 func Register(c *gin.Context) {
@@ -40,12 +40,6 @@ func Register(c *gin.Context) {
     return
   }
 
-	// Ensure passwords match
-	if req.Password != req.ConfirmPassword {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Passwords do not match"})
-		return
-	}
-
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing user"})
@@ -54,8 +48,9 @@ func Register(c *gin.Context) {
 
 	// Create a new user model
 	user := models.User {
-		Username: req.Username,
 		Email: req.Email,
+		DisplayName: req.DisplayName,
+		Username: req.Username,	
 		PasswordHash: hashedPassword,
 	}
 
@@ -66,6 +61,7 @@ func Register(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 			return
 		}
+		fmt.Printf("Error: %v, User: %v", err, user)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return
 	}
