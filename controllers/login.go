@@ -37,6 +37,9 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error genereting token"})
 		return
 	}
+	
+	// Set the token in a secure httpOnly cookie
+	c.SetCookie("refresh_token", token, 7*24*3600, "/", "localhost", false, true)
 
 	// Return the token
 	c.JSON(http.StatusOK, gin.H{"token": token})

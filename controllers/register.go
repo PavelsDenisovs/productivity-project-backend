@@ -61,10 +61,19 @@ func Register(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 			return
 		}
-		fmt.Printf("Error: %v, User: %v", err, user)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return
 	}
+
+	// Generate JWT token
+	token, err := utils.GenerateJWT(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error genereting token"})
+		return
+	}
+
+	// Set the token in a secure httpOnly cookie
+	c.SetCookie("refresh_token", token, 7*24*3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
 }
