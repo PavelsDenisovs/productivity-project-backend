@@ -1,1 +1,4 @@
+# Secret
 .env
+.env.development
+.env.production
