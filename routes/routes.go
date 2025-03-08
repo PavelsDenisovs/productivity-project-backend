@@ -5,14 +5,22 @@ import (
 	"messenger-backend/controllers"
 )
 
-func RegisterRoutes(router *gin.Engine) {
-	userGroup := router.Group("/user")
+func RegisterRoutes(router *gin.Engine, authMiddleware gin.HandlerFunc) {
+	// Public routes (no authentication required)
+	public := router.Group("/users")
 	{
-		userGroup.POST("/validate", controllers.Validate)
-		userGroup.POST("/register", controllers.Register)
-		userGroup.POST("/login", controllers.Login)
-		userGroup.GET("/profile", controllers.Profile)
-		userGroup.POST("/send-verification", controllers.SendVerificationCode)
-		userGroup.POST("/verify-code", controllers.VerifyCode)
+		public.POST("/register", controllers.Register) // Sign up(auto-sends verufication code)
+		public.POST("/login", controllers.Login) // Sign in
+		public.POST("/resend-verification", controllers.ResendVerificationCode) // Resend code
+		public.POST("/verify-email", controllers.VerifyEmail) // Submit verification code
+	}
+
+	// Private routes (require authentication)
+	private := router.Group("/users")
+	private.Use(authMiddleware)
+	{
+		private.GET("/me", controllers.GetCurrentUserProfile)
+		private.PUT("/me", controllers.UpdateProfile)
+		private.GET("", controllers.SearchUsers)
 	}
 }
