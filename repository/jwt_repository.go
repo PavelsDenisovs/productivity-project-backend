@@ -6,18 +6,24 @@ import (
 	"time"
 )
 
-type JWTTokenRepository struct{
+type JWTTokenRepository interface {
+  StoreRefreshToken(userID, refreshToken string, expiresAt time.Time) error
+  IsTokenBlacklisted(refreshToken string) (bool, error)
+  RevokeToken(refreshToken string) error
+}
+
+type jwtTokenRepository struct{
 	db *sql.DB
 }
 
-func NewJWTTokenRepository(db *sql.DB) *JWTTokenRepository {
-	return &JWTTokenRepository{db: db}
+func NewJWTTokenRepository(db *sql.DB) JWTTokenRepository {
+	return &jwtTokenRepository{db: db}
 }
 
-func (r *JWTTokenRepository) StoreRefreshToken(userID string, refreshToken string, expiresAt time.Time) error {
+func (r *jwtTokenRepository) StoreRefreshToken(userID string, refreshToken string, expiresAt time.Time) error {
   query := `INSERT INTO jwt_tokens (user_id, refresh_token, is_blacklisted, created_at, expires_at)
             VALUES ($1, $2, $3, $4, $5) ON CONFLICT (refresh_token)
-            DO UPDATE SET refresh_toke = $2, expires_at = $5, is_blacklisted = $3`
+            DO UPDATE SET refresh_token = $2, expires_at = $5, is_blacklisted = $3`
   _, err := r.db.Exec(query, userID, refreshToken, false, time.Now(), expiresAt)
   if err != nil {
     return fmt.Errorf("failed to store refresh token: %v", err)
@@ -25,7 +31,7 @@ func (r *JWTTokenRepository) StoreRefreshToken(userID string, refreshToken strin
   return nil
 }
 
-func (r *JWTTokenRepository) IsTokenBlacklisted(refreshToken string) (bool, error) {
+func (r *jwtTokenRepository) IsTokenBlacklisted(refreshToken string) (bool, error) {
   var isBlacklisted bool
   query := `SELECT is_blacklisted FROM jwt_tokens WHERE refresh_token = $1`
   err := r.db.QueryRow(query, refreshToken).Scan(&isBlacklisted)
@@ -37,7 +43,7 @@ func (r *JWTTokenRepository) IsTokenBlacklisted(refreshToken string) (bool, erro
   return isBlacklisted, nil
 }
 
-func (r *JWTTokenRepository) RevokeToken(refreshToken string) error {
+func (r *jwtTokenRepository) RevokeToken(refreshToken string) error {
   query := `UPDATE jwt_tokens SET is_blacklisted = true WHERE refresh_token = $1`
   _, err := r.db.Exec(query, refreshToken)
   if err != nil {
