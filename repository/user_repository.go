@@ -31,8 +31,8 @@ func (r *userRepository) CreateUser(user *models.User) error {
 
 	// Insert the user into the database
 	query := `INSERT INTO users (id, username, display_name, email, password_hash, created_at, updated_at, is_active, email_verified)
-						VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
-	err := r.db.QueryRow(query, user.Username, user.DisplayName, user.Email, user.PasswordHash, time.Now(), time.Now(), true, false).Scan(&user.ID)
+						VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`
+	err := r.db.QueryRow(query, user.ID, user.Username, user.DisplayName, user.Email, user.PasswordHash, time.Now(), time.Now(), true, false).Scan(&user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %v", err)
 	}
