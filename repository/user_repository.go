@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"fmt"
 	"database/sql"
 	"errors"
-	"messenger-backend/models"
-    "github.com/google/uuid"
+	"fmt"
+	"productivity-project-backend/models"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
@@ -15,7 +16,7 @@ type UserRepository interface {
 	MarkEmailAsVerified(email string) error
 }
 
-type userRepository struct{
+type userRepository struct {
 	db *sql.DB
 }
 

@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
-	"messenger-backend/models"
-	"messenger-backend/repository"
-	"messenger-backend/utils"
+	"productivity-project-backend/models"
+	"productivity-project-backend/repository"
+	"productivity-project-backend/utils"
 )
 
 type UserService interface {
@@ -21,14 +21,14 @@ type UserService interface {
 
 type userService struct {
 	userRepo         repository.UserRepository
-	jwtRepo			 repository.JWTTokenRepository
+	jwtRepo          repository.JWTTokenRepository
 	verificationRepo repository.VerificationRepository
 }
 
 func NewUserService(userRepo repository.UserRepository, jwtRepo repository.JWTTokenRepository, verificationRepo repository.VerificationRepository) UserService {
 	return &userService{
-		userRepo: userRepo,
-		jwtRepo: jwtRepo,
+		userRepo:         userRepo,
+		jwtRepo:          jwtRepo,
 		verificationRepo: verificationRepo,
 	}
 }
@@ -36,7 +36,7 @@ func NewUserService(userRepo repository.UserRepository, jwtRepo repository.JWTTo
 func (s *userService) Register(email, password string, userData models.User) error {
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
-		return fmt.Errorf("failed to hash password: %v", err) 
+		return fmt.Errorf("failed to hash password: %v", err)
 	}
 	userData.PasswordHash = hashedPassword
 	userData.Email = email

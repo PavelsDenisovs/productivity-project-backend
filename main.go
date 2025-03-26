@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"messenger-backend/repository"
-	"messenger-backend/routes"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors"
+	"productivity-project-backend/repository"
+	"productivity-project-backend/routes"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-lenght"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	// Register routes
