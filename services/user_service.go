@@ -1,18 +1,22 @@
 package services
 
 import (
+	"errors"
+	"fmt"
 	"messenger-backend/models"
 	"messenger-backend/repository"
+	"messenger-backend/utils"
 )
 
 type UserService interface {
-	CreateUser(user *models.User) error
-	GetUserByEmail(email string) (*models.User, error)
-	Register(user *models.User) (string, string, error) // Returns access and refresh tokens
-	Login(email, password string) (string, string, error) // Returns access and refresh tokens
-	Logout(refreshToken string) error
-	RefreshToken(refreshToken string) (string, string, error) // Returs new access and refresh tokens
+	Register(email, password string, userData models.User) error
+	ResendVerificationCode(email string) error
 	VerifyEmail(email, code string) error
+
+	GetUserProfile(userID string) (*models.User, error)
+	UpdateUserProfile(userID string, updateData models.UserUpdate)
+
+	SearchUsers(query string) ([]models.User, error)
 }
 
 type userService struct {
@@ -29,11 +33,37 @@ func NewUserService(userRepo repository.UserRepository, jwtRepo repository.JWTTo
 	}
 }
 
+func (s *userService) Register(email, password string, userData models.User) error {
+	hashedPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %v", err) 
+	}
+	userData.PasswordHash = hashedPassword
+	userData.Email = email
 
+	err = s.userRepo.CreateUser(&userData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
+func (s *userService) ResendVerificationCode(email string) error {
+	code := utils.GenerateVerificationCode()
+	err := utils.SendVerificationEmail(email, code)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-func
-
-func (s *userService) CreateUser(user *models.User) error {
-	
+func (s *userService) VerifyEmail(email, code string) error {
+	isVerified, err := s.verificationRepo.VerifyCode(email, code)
+	if err != nil {
+		return err
+	}
+	if !isVerified {
+		return errors.New("invalid or expired verification code")
+	}
+	return nil
 }

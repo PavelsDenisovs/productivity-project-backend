@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"math/rand"
-	"net/smpt"
 	"net/smtp"
 	"os"
 	"time"

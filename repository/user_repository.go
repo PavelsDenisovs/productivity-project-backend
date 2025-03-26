@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
+	MarkEmailAsVerified(email string) error
 }
 
 type userRepository struct{
@@ -51,3 +52,7 @@ func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
 	}
 	return &user, nil
 }
+
+// func (r *userRepository) MarkEmailAsVerified(email string) error {
+// 	query := `INSERT INTO users ()`
+// }
