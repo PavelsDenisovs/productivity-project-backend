@@ -4,9 +4,7 @@ import (
 	"log"
 	"productivity-project-backend/repository"
 	"productivity-project-backend/routes"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,18 +19,16 @@ func main() {
 	// Set up Gin router
 	router := gin.Default()
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-lenght"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
+	// Temporary solution
+	authMiddleware := func(c *gin.Context) {
+    // Empty middleware for now
+    c.Next()
+}
 	// Register routes
-	routes.RegisterRoutes(router)
+	routes.RegisterRoutes(router, authMiddleware)
 
 	// Start the server
-	router.Run(":8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
