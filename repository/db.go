@@ -9,8 +9,6 @@ import (
   _ "github.com/lib/pq"
 )
 
-var db *sql.DB
-
 func InitDatabase() (*sql.DB, error) {
   connStr := os.Getenv("DB_URL")
   db, err := sql.Open("postgres", connStr)
