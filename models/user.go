@@ -6,27 +6,18 @@ import (
 )
 
 type User struct {
-	ID              uuid.UUID    `json:"id"`
-	Username        string       `json:"username" validate:"required,max=30"`
-	DisplayName     string       `json:"displayName" validate:"required,max=50"`
-	Email           string       `json:"email" validate:"required,email"`
-	PasswordHash    string       `json:"-"`
-	AvatarURL       string       `json:"avatarUrl"`
-	IsActive        bool         `json:"isActive"`
-	EmailVerified   bool         `json:"emailVerified"`
-	CreatedAt       time.Time    `json:"createdAt"`
-	UpdatedAt       time.Time    `json:"updatedAt"`
-	OAuthProvider   string       `json:"oauthProvider,omitempty"`
-	OAuthProviderID string       `json:"oauthProviderId,omitempty"`
+	ID           uuid.UUID `db:"id" json:"id"`
+	Email        string    `db:"email" json:"email"`
+	PasswordHash string    `db:"password_hash" json:"-"`
+	IsVerified   bool      `db:"is_verified" json:"isVerified"`
+	CreatedAt    time.Time `db:"created_at" json:"createdAt"`
+	UpdatedAt    time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-type UserUpdate struct {
-    Username    string `json:"username,omitempty" validate:"omitempty,max=30"`
-    DisplayName string `json:"displayName,omitempty" validate:"omitempty,max=50"`
-    AvatarURL   string `json:"avatarUrl,omitempty" validate:"omitempty,url"`
-}
-
-type ChangePasswordRequest struct {
-	CurrentPassword string `json:"currentPassword" validate:"required"`
-	NewPassword     string `json:"newPassword" validate:"required,min=8"`
+type VerificationCode struct {
+	UserID    uuid.UUID `db:"user_id"`
+	Code      string    `db:"code"`
+	Used      bool      `db:"used"`
+	ExpiresAt time.Time `db:"expires_at"`
+	CreatedAt time.Time `db:"created_at"`
 }
