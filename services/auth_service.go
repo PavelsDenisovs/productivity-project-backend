@@ -12,6 +12,7 @@ type AuthService interface {
 	Register(email, password string) (*models.User, error)
 	Login(email, password string) (*models.User, error)
 	VerifyEmail(email, code string) error
+	GenerateAndStoreVerificationCode(email string) error
 }
 
 type authService struct {
@@ -59,14 +60,6 @@ func (s *authService) Register(email, password string) (*models.User, error) {
 	if err := s.userRepo.CreateUser(user); err != nil {
 		return nil, fmt.Errorf("error creating user: %w", err)
 	}
-	code := utils.GenerateVerificationCode()
-	if err := utils.SendVerificationEmail(email, code); err != nil {
-		return nil, fmt.Errorf("failed to store verification code: %w", err)
-	}
-
-	if err := s.verificationRepo.StoreVerificationCode(user.ID, code); err != nil {
-    return nil, fmt.Errorf("failed to store verification code: %w", err)
-	}
 
 	return user, nil
 }
@@ -105,6 +98,25 @@ func (s *authService) VerifyEmail(email, code string) error {
 
 	if err := s.userRepo.MarkEmailAsVerified(email); err != nil {
 		return fmt.Errorf("failed to mark email as verified: %w", err)
+	}
+
+	return nil
+}
+
+func (s *authService) GenerateAndStoreVerificationCode(email string) error {
+	user, err := s.userRepo.GetUserByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	code := utils.GenerateVerificationCode()
+	
+	if err := s.verificationRepo.StoreVerificationCode(user.ID, code); err != nil {
+    return fmt.Errorf("failed to store verification code: %w", err)
+	}
+
+	if err := utils.SendVerificationEmail(email, code); err != nil {
+		return fmt.Errorf("failed to store verification code: %w", err)
 	}
 
 	return nil
