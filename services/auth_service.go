@@ -31,10 +31,9 @@ func (s *authService) Register(email, password string) (*models.User, error) {
 	existingUser, err := s.userRepo.GetUserByEmail(email)
 	if err != nil {
 		// TODO make errors centralized
-		if err.Error() == "user not found" {
+		if err.Error() != "user not found" {
 			return nil, fmt.Errorf("error checking user existence: %w", err)
 		}
-		return nil, err
 	} else if existingUser != nil {
 		return nil, errors.New("user already exists")
 	}
