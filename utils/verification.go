@@ -21,11 +21,10 @@ func SendVerificationEmail(email, code string) error {
 		return fmt.Errorf("failed to load .env: %w", err)
 	}
 
-
-	smtpHost := os.Getenv("SMPT_HOST")
-	smtpPort := os.Getenv("SMPT_PORT")
-	smtpUsername := os.Getenv("SMPT_USERNAME")
-	smtpPassword := os.Getenv("SMPT_PASSWORD")
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	smtpUsername := os.Getenv("SMTP_USERNAME")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
 	senderEmail := os.Getenv("SENDER_EMAIL")
 
 	if smtpHost == "" || smtpPort == "" || smtpUsername == "" || smtpPassword == "" || senderEmail == "" {
@@ -47,6 +46,6 @@ func SendVerificationEmail(email, code string) error {
 	if err != nil {
 		return fmt.Errorf("failed to send email: %w", err)
 	}
-	
+
 	return nil
 }

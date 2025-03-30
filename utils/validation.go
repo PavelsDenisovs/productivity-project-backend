@@ -1,6 +1,7 @@
-package utils 
+package utils
 
 import (
+	"errors"
 	"regexp"
 )
 
@@ -26,16 +27,16 @@ func ValidateDisplayName(value string) string {
 	return ""
 }
 
-func ValidateEmail(value string) string {
-	if value == "" {
-		return "Email is required"
+func ValidateEmail(email string) error {
+	if email == "" {
+		return errors.New("email is required")
 	}
 	// Basic email regex pattern
 	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	if !re.MatchString(value) {
-		return "Invalid email format"
+	if !re.MatchString(email) {
+		return errors.New("invalid email format")
 	}
-	return ""
+	return nil
 }
 
 func ValidateUsername(value string) string {
@@ -53,27 +54,27 @@ func ValidateUsername(value string) string {
 	return ""
 }
 
-func ValidatePassword(value string) string {
-  if value == "" {
-    return "Password is required"
+func ValidatePassword(password string) error {
+  if password == "" {
+    return errors.New("password is required")
   }
-  if len(value) < 8 {
-    return "Password must be at least 8 characters."
+  if len(password) < 8 {
+    return errors.New("password must be at least 8 characters")
   }
-  if !uppercasePattern.MatchString(value) {
-    return "Password must contain at least one uppercase letter"
+  if !uppercasePattern.MatchString(password) {
+    return errors.New("password must contain at least one uppercase letter")
   }
-  if !lowercasePattern.MatchString(value) {
-    return "Password must contain at least one lowercase letter"
+  if !lowercasePattern.MatchString(password) {
+    return errors.New("password must contain at least one lowercase letter")
   }
-  if !digitPattern.MatchString(value) {
-    return "Password must contain at least one digit"
+  if !digitPattern.MatchString(password) {
+    return errors.New("password must contain at least one digit")
   }
-  if !specialCharPattern.MatchString(value) {
-    return "Password must contain at least one special character"
+  if !specialCharPattern.MatchString(password) {
+    return errors.New("password must contain at least one special character")
     }
-  if spacePattern.MatchString(value) {
-    return "Password cannot contain spaces"
+  if spacePattern.MatchString(password) {
+    return errors.New("password cannot contain spaces")
   }
-  return ""
+  return nil
 }
