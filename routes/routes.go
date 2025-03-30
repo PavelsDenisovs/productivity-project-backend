@@ -12,9 +12,17 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-func RegisterRoutes(router *gin.Engine, authMiddleware gin.HandlerFunc) {
+func RegisterRoutes(
+		router *gin.Engine, 
+		authController controllers.AuthController, 
+		verificationController controllers.VerificationController,
+	) {
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:3000"
+	}
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{os.Getenv("FRONTEND_URL")},
+		AllowOrigins:     []string{frontendURL},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -36,18 +44,18 @@ func RegisterRoutes(router *gin.Engine, authMiddleware gin.HandlerFunc) {
 		),
 	)
 
-	public := router.Group("/users")
+	public := router.Group("/auth")
 	public.Use(rateLimiter)
 	{
-		public.POST("/register", controllers.Register)
-		public.POST("/login", controllers.Login)
-		public.POST("/resend-verification", controllers.ResendVerificationCode)
-		public.POST("/verify-email", controllers.VerifyEmail)
+		public.POST("/register", authController.Register)
+		public.POST("/login", authController.Login)
+		public.POST("/resend-verification", verificationController.ResendVerification)
+		public.POST("/verify-email", verificationController.VerifyEmail)
 	}
-
-	auth := router.Group("/")
-	auth.Use(authMiddleware)
-	{
-		auth.POST("/logout", controllers.Logout)
-	}
+	// TODO: implement /logout route
+	// auth := router.Group("/")
+	// auth.Use(authMiddleware)
+	// {
+	// 	auth.POST("/logout", controllers.Logout)
+	// }
 }
