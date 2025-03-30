@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	
 )
 
 var randomGenerator = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -17,10 +17,6 @@ func GenerateVerificationCode() string {
 }
 
 func SendVerificationEmail(email, code string) error {
-	if err := godotenv.Load(); err != nil {
-		return fmt.Errorf("failed to load .env: %w", err)
-	}
-
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
 	smtpUsername := os.Getenv("SMTP_USERNAME")
