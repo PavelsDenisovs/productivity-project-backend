@@ -2,17 +2,36 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"productivity-project-backend/controllers"
 	"productivity-project-backend/repository"
 	"productivity-project-backend/routes"
 	"productivity-project-backend/services"
+
+	"os"
+
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
+
+var store *sessions.CookieStore
 
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
+	}
+
+	store  = sessions.NewCookieStore(
+		[]byte(os.Getenv("SESSION_SECRET")),
+	)
+
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   30 * 86400,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	db, err := repository.InitDatabase()
