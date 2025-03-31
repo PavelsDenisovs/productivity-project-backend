@@ -5,6 +5,7 @@ import (
 	"productivity-project-backend/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 )
 
 type AuthController interface {
@@ -14,10 +15,14 @@ type AuthController interface {
 
 type authController struct {
 	authService services.AuthService
+	store       *sessions.CookieStore
 }
 
-func NewAuthController(authService services.AuthService) AuthController {
-	return &authController{authService: authService}
+func NewAuthController(authService services.AuthService, store *sessions.CookieStore) AuthController {
+	return &authController{
+		authService: authService,
+		store: store,
+	}
 }
 
 func (ac *authController) Register(c *gin.Context) {
@@ -62,6 +67,20 @@ func (ac *authController) Login(c *gin.Context) {
 	user, err := ac.authService.Login(request.Email, request.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	session, err := ac.store.Get(c.Request, "session")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session creation failed"})
+		return 
+	}
+
+	session.Values["user_id"] = user.ID
+	session.Values["authenticated"] = true
+
+	if err := session.Save(c.Request, c.Writer); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 
