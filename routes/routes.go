@@ -2,7 +2,6 @@ package routes
 
 import (
 	"productivity-project-backend/controllers"
-	"productivity-project-backend/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -34,7 +33,7 @@ func RegisterRoutes(
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
+	// TODO: make this only applying on extraneous queries
 	rate := limiter.Rate{
 		Period: 1 * time.Minute,
 		Limit:  5,
@@ -56,11 +55,6 @@ func RegisterRoutes(
 		public.POST("/login", authController.Login)
 		public.POST("/resend-verification", verificationController.ResendVerification)
 		public.POST("/verify-email", verificationController.VerifyEmail)
-	}
-	// TODO: implement /logout route
-	auth := router.Group("/")
-	auth.Use(middlewares.AuthMiddleware(store))
-	{
-		auth.POST("/logout", controllers.Logout)
+		public.POST("/logout", authController.Logout)
 	}
 }

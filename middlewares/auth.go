@@ -16,7 +16,7 @@ func AuthMiddleware(store *sessions.CookieStore) gin.HandlerFunc {
 			})
 			return
 		}
-		// question
+		
 		auth, ok := session.Values["authenticated"].(bool)
 		if !ok || !auth {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

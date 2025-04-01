@@ -11,6 +11,7 @@ import (
 type AuthController interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 type authController struct {
@@ -74,4 +75,18 @@ func (ac *authController) Login(c *gin.Context) {
 		"message": "Login successful",
 		"user": user,
 	})
+}
+
+func (ac *authController) Logout(c *gin.Context) {
+	session, _ := ac.store.Get(c.Request, "session")
+	
+	session.Values = make(map[interface{}]interface{})
+	session.Options.MaxAge = -1
+	
+	if err := session.Save(c.Request, c.Writer); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Logout failed"})
+		return
+	}
+	
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
