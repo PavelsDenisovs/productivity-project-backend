@@ -13,6 +13,7 @@ type AuthService interface {
 	Login(email, password string) (*models.User, error)
 	VerifyEmail(email, code string) error
 	GenerateAndStoreVerificationCode(email string) error
+	GetUserByEmail(email string) (*models.User, error)
 }
 
 type authService struct {
@@ -119,4 +120,8 @@ func (s *authService) GenerateAndStoreVerificationCode(email string) error {
 	}
 
 	return nil
+}
+
+func (s *authService) GetUserByEmail(email string) (*models.User, error) {
+	return s.userRepo.GetUserByEmail(email)
 }

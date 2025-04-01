@@ -70,20 +70,6 @@ func (ac *authController) Login(c *gin.Context) {
 		return
 	}
 
-	session, err := ac.store.Get(c.Request, "session")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session creation failed"})
-		return 
-	}
-
-	session.Values["user_id"] = user.ID
-	session.Values["authenticated"] = true
-
-	if err := session.Save(c.Request, c.Writer); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
 		"user": user,

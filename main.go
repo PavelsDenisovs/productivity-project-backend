@@ -48,7 +48,7 @@ func main() {
 
 	
 	authController := controllers.NewAuthController(authService, store)
-	verificationController := controllers.NewVerificationController(authService)
+	verificationController := controllers.NewVerificationController(authService, store)
 
 	router := gin.Default()
 

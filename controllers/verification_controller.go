@@ -5,6 +5,7 @@ import (
 	"productivity-project-backend/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 )
 
 type VerificationController interface {
@@ -14,10 +15,14 @@ type VerificationController interface {
 
 type verificationController struct {
 	authService services.AuthService
+	store       *sessions.CookieStore
 }
 
-func NewVerificationController(authService services.AuthService) VerificationController {
-	return &verificationController{authService: authService}
+func NewVerificationController(authService services.AuthService, store *sessions.CookieStore) VerificationController {
+	return &verificationController{
+		authService: authService,
+		store:       store,
+	}
 }
 
 func (vc *verificationController) VerifyEmail(c *gin.Context) {
@@ -33,6 +38,26 @@ func (vc *verificationController) VerifyEmail(c *gin.Context) {
 
 	if err := vc.authService.VerifyEmail(request.Email, request.Code); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Verification failed"})
+		return
+	}
+
+	user, err := vc.authService.GetUserByEmail(request.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User retrieval failed"})
+		return
+	}
+
+	session, err := vc.store.Get(c.Request, "session")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session creation failed"})
+		return 
+	}
+
+	session.Values["user_id"] = user.ID
+	session.Values["authenticated"] = true
+
+	if err := session.Save(c.Request, c.Writer); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 
