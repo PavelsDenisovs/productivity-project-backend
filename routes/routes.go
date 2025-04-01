@@ -2,20 +2,25 @@ package routes
 
 import (
 	"productivity-project-backend/controllers"
+	"productivity-project-backend/middlewares"
+
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 
 	"os"
 	"time"
+
+	"github.com/gin-contrib/cors"
 	"github.com/ulule/limiter/v3"
 	limiterGin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	limiterStore "github.com/ulule/limiter/v3/drivers/store/memory"
-	"github.com/gin-contrib/cors"
 )
 
 func RegisterRoutes(
 		router *gin.Engine, 
 		authController controllers.AuthController, 
 		verificationController controllers.VerificationController,
+		store *sessions.CookieStore,
 	) {
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {
@@ -53,9 +58,9 @@ func RegisterRoutes(
 		public.POST("/verify-email", verificationController.VerifyEmail)
 	}
 	// TODO: implement /logout route
-	// auth := router.Group("/")
-	// auth.Use(authMiddleware)
-	// {
-	// 	auth.POST("/logout", controllers.Logout)
-	// }
+	auth := router.Group("/")
+	auth.Use(middlewares.AuthMiddleware(store))
+	{
+		auth.POST("/logout", controllers.Logout)
+	}
 }

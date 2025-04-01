@@ -54,7 +54,7 @@ func main() {
 
 	// TODO: Implement auth middleware for logout and other routes
 
-	routes.RegisterRoutes(router, authController, verificationController)
+	routes.RegisterRoutes(router, authController, verificationController, store)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Failed to start server:", err)
