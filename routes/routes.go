@@ -36,7 +36,7 @@ func RegisterRoutes(
 	// TODO: make this only applying on extraneous queries
 	rate := limiter.Rate{
 		Period: 1 * time.Minute,
-		Limit:  5,
+		Limit:  9999,
 	}	
 
 	// Create middleware

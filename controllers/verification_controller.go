@@ -47,10 +47,15 @@ func (vc *verificationController) VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	session, err := vc.store.Get(c.Request, "session")
+  if oldSession, err := vc.store.Get(c.Request, "session"); err == nil {
+    oldSession.Options.MaxAge = -1
+    oldSession.Save(c.Request, c.Writer)
+	}
+
+	session, err := vc.store.New(c.Request, "session")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session creation failed"})
-		return 
+		return
 	}
 
 	session.Values["user_id"] = user.ID
