@@ -18,6 +18,7 @@ import (
 var store *sessions.CookieStore
 
 func main() {
+	// TODO: implement .env.production and .env.development separation
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
