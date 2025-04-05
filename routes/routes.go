@@ -55,6 +55,7 @@ func RegisterRoutes(
 		public.POST("/login", authController.Login)
 		public.POST("/resend-verification", verificationController.ResendVerification)
 		public.POST("/verify-email", verificationController.VerifyEmail)
+		public.GET("/current-user", authController.GetCurrentUser)
 		public.POST("/logout", authController.Logout)
 	}
 }
