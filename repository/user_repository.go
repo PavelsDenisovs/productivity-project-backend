@@ -85,3 +85,4 @@ func (r *userRepository) MarkEmailAsVerified(email string) error {
 	}
 	return tx.Commit()
 }
+

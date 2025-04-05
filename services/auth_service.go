@@ -6,6 +6,8 @@ import (
 	"productivity-project-backend/models"
 	"productivity-project-backend/repository"
 	"productivity-project-backend/utils"
+
+	"github.com/google/uuid"
 )
 
 type AuthService interface {
@@ -14,6 +16,7 @@ type AuthService interface {
 	VerifyEmail(email, code string) error
 	GenerateAndStoreVerificationCode(email string) error
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByID(id uuid.UUID) (*models.User, error)
 }
 
 type authService struct {
@@ -124,4 +127,8 @@ func (s *authService) GenerateAndStoreVerificationCode(email string) error {
 
 func (s *authService) GetUserByEmail(email string) (*models.User, error) {
 	return s.userRepo.GetUserByEmail(email)
+}
+
+func (s *authService) GetUserByID(id uuid.UUID) (*models.User, error) {
+	return s.userRepo.GetUserByID(id)
 }
