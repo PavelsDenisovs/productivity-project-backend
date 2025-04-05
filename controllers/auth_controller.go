@@ -5,6 +5,7 @@ import (
 	"productivity-project-backend/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 )
 
@@ -12,6 +13,7 @@ type AuthController interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
 	Logout(c *gin.Context)
+	GetCurrentUser(c *gin.Context)
 }
 
 type authController struct {
@@ -112,4 +114,21 @@ func (ac *authController) Logout(c *gin.Context) {
 	}
 	
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+}
+
+func (ac *authController) GetCurrentUser(c *gin.Context) {
+	session, err := ac.store.Get(c.Request, "session")
+	if err != nil || !session.Values["authenticated"].(bool) {
+    c.JSON(http.StatusUnauthorized, gin.H{"error": "Not authenticated"})
+    return
+  }
+
+	userID := session.Values["user_id"].(uuid.UUID)
+  user, err := ac.authService.GetUserByID(userID)
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+    return
+  }
+
+  c.JSON(http.StatusOK, gin.H{"email": user.Email})
 }
