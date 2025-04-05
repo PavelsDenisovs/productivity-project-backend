@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"log"
 	"net/http"
 	"productivity-project-backend/controllers"
@@ -11,6 +12,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
@@ -22,6 +24,9 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	
+  gob.Register(uuid.UUID{})
 
 	store  = sessions.NewCookieStore(
 		[]byte(os.Getenv("SESSION_SECRET")),
