@@ -13,6 +13,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByID(id uuid.UUID) (*models.User, error)
 	MarkEmailAsVerified(email string) error
 }
 
@@ -47,6 +48,19 @@ func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
 		return nil, errors.New("user not found")
 	} else if err != nil {
 		return nil, fmt.Errorf("failed to get user by email: %v", err)
+	}
+	return &user, nil
+}
+
+func (r *userRepository) GetUserByID(id uuid.UUID) (*models.User, error) {
+	var user models.User
+	query := `SELECT id, email, password_hash, is_verified, created_at, updated_at
+						FROM users WHERE id = $1`
+	err := r.db.QueryRow(query, id).Scan(&user.ID, &user.Email, &user.PasswordHash, &user.IsVerified, &user.CreatedAt, &user.UpdatedAt)
+	if err == sql.ErrNoRows {
+		return nil, errors.New("user not found")
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to get user by id: %v", err)
 	}
 	return &user, nil
 }
