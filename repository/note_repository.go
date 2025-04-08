@@ -9,8 +9,8 @@ import (
 )
 
 type NoteRepository interface {
+	GetAllNotes(userID uuid.UUID) ([]models.Note, error)
 	Create(note *models.Note) error
-	GetByDate(userID uuid.UUID, date time.Time) (*models.Note, error)
 	Update(note *models.Note) error
 }
 
@@ -20,6 +20,41 @@ type noteRepository struct {
 
 func NewNoteRepository(db *sql.DB) NoteRepository {
 	return &noteRepository{db: db}
+}
+
+func (r *noteRepository) GetAllNotes(userID uuid.UUID) ([]models.Note, error) {
+	rows, err := r.db.Query(`
+		SELECT id, user_id, date, content, sleep_quality, created_at, updated_at
+		FROM notes WHERE user_id = $1
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	
+	var notes []models.Note
+	for rows.Next() {
+		var note models.Note
+		err := rows.Scan(
+			&note.ID,
+			&note.UserID,
+			&note.Date,
+			&note.Content,
+			&note.SleepQuality,
+			&note.CreatedAt,
+			&note.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		notes = append(notes, note)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return notes, nil
 }
 
 func (r *noteRepository) Create(note *models.Note) error {
@@ -32,22 +67,6 @@ func (r *noteRepository) Create(note *models.Note) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`, note.ID, note.UserID, note.Date, note.Content, note.SleepQuality, note.CreatedAt, note.UpdatedAt)
 	return err
-}
-
-func (r *noteRepository) GetByDate(userID uuid.UUID, date time.Time) (*models.Note, error) {
-	var note models.Note
-	err := r.db.QueryRow(`
-		SELECT id, user_id, date, content, sleep_quality, created_at, updated_at
-		FROM notes WHERE user_id = $1 AND date = $2
-	`, userID, date).Scan(
-		&note.ID, 
-		&note.UserID,
-		&note.Content,
-		&note.SleepQuality,
-		&note.CreatedAt,
-	  &note.UpdatedAt,
-	)
-	return &note, err
 }
 
 func (r *noteRepository) Update(note *models.Note) error {
