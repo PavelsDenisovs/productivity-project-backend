@@ -2,6 +2,7 @@ package routes
 
 import (
 	"productivity-project-backend/controllers"
+	"productivity-project-backend/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -19,6 +20,7 @@ func RegisterRoutes(
 		router *gin.Engine, 
 		authController controllers.AuthController, 
 		verificationController controllers.VerificationController,
+		noteController controllers.NoteController,
 		store *sessions.CookieStore,
 	) {
 	frontendURL := os.Getenv("FRONTEND_URL")
@@ -36,7 +38,7 @@ func RegisterRoutes(
 	// TODO: make this only applying on extraneous queries
 	rate := limiter.Rate{
 		Period: 1 * time.Minute,
-		Limit:  9999,
+		Limit:  2000,
 	}	
 
 	// Create middleware
@@ -57,5 +59,14 @@ func RegisterRoutes(
 		public.POST("/verify-email", verificationController.VerifyEmail)
 		public.GET("/current-user", authController.GetCurrentUser)
 		public.POST("/logout", authController.Logout)
+	}
+
+	protected := router.Group("/notes")
+	protected.Use(rateLimiter)
+	protected.Use(middlewares.AuthMiddleware(store))
+	{
+		protected.GET("", noteController.GetAllNotes)
+		protected.POST("", noteController.CreateNote)
+		protected.PUT("/:id", noteController.UpdateNote)
 	}
 }
