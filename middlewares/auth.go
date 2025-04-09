@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 )
 
@@ -25,8 +26,8 @@ func AuthMiddleware(store *sessions.CookieStore) gin.HandlerFunc {
 			return
 		}
 
-		userID, ok := session.Values["user_id"].(string)
-		if !ok || userID == "" {
+		userID, ok := session.Values["user_id"].(uuid.UUID)
+		if !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "Invalid session",
 			})

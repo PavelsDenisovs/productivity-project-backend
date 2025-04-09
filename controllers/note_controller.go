@@ -24,17 +24,12 @@ func NewNoteController(noteService services.NoteService) NoteController {
 }
 
 func (nc *noteController) GetAllNotes(c *gin.Context) {
-	userIDStr, exists := c.Get("user_id")
+	userIDVal, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in session"})
 		return
 	}
-
-	userID, err := uuid.Parse(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	userID := userIDVal.(uuid.UUID)
 
 	notes, err := nc.noteService.GetAllNotes(userID)
 	if err != nil {
@@ -53,17 +48,12 @@ func (nc *noteController) CreateNote(c *gin.Context) {
 	}
 
 	// User ID from session
-	userIDStr, exists := c.Get("user_id")
+	userIDVal, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in session"})
 		return
 	}
-	userID, err := uuid.Parse(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	note.UserID = userID
+	note.UserID = userIDVal.(uuid.UUID)
 
 	if note.Content == "" {
 		note.Content = ""
