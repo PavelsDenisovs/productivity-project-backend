@@ -77,8 +77,8 @@ func (nc *noteController) CreateNote(c *gin.Context) {
 }
 
 func (nc *noteController) UpdateNote(c *gin.Context) {
-	var note models.Note
-	if err := c.ShouldBindJSON(&note); err != nil {
+	var noteData models.UpdateNoteDTO
+	if err := c.ShouldBindJSON(&noteData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON input"})
 		return
 	}
@@ -88,12 +88,12 @@ func (nc *noteController) UpdateNote(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid note ID"})
 		return
 	}
-	note.ID = noteID
+	noteData.ID = noteID
 
-	if err := nc.noteService.UpdateNote(&note); err != nil {
+	if err := nc.noteService.UpdateNote(&noteData); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update note"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"note": note})
+	c.JSON(http.StatusOK, gin.H{"note": noteData})
 }

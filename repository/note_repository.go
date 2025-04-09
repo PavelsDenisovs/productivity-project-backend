@@ -11,7 +11,7 @@ import (
 type NoteRepository interface {
 	GetAllNotes(userID uuid.UUID) ([]models.Note, error)
 	Create(note *models.Note) error
-	Update(note *models.Note) error
+	Update(note *models.UpdateNoteDTO) error
 }
 
 type noteRepository struct {
@@ -69,10 +69,9 @@ func (r *noteRepository) Create(note *models.Note) error {
 	return err
 }
 
-func (r *noteRepository) Update(note *models.Note) error {
-	note.UpdatedAt = time.Now()
+func (r *noteRepository) Update(noteData *models.UpdateNoteDTO) error {
 	_, err := r.db.Exec(`
 		UPDATE notes SET content = $1, sleep_quality = $2, updated_at = $3
-		WHERE id = $4`, note.Content, note.SleepQuality, note.UpdatedAt, note.ID)
+		WHERE id = $4`, noteData.Content, noteData.SleepQuality, time.Now(), noteData.ID)
 	return err
 }

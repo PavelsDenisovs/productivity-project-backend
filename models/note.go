@@ -27,3 +27,9 @@ func (n *Note) MarshalJSON() ([]byte, error) {
 		Alias: (*Alias)(n),
 	})
 }
+
+type UpdateNoteDTO struct {
+	ID           uuid.UUID `json:"id" db:"id"`
+	Content      string `json:"content"`
+	SleepQuality *int   `json:"sleep_quality"`
+}
