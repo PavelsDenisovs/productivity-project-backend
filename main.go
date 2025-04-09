@@ -48,19 +48,22 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 	verificationRepo := repository.NewVerificationRepository(db)
+	noteRepo := repository.NewNoteRepository(db)
 
 	
 	authService := services.NewAuthService(userRepo, verificationRepo)
+	noteService := services.NewNoteService(noteRepo)
 
 	
 	authController := controllers.NewAuthController(authService, store)
 	verificationController := controllers.NewVerificationController(authService, store)
+	noteController := controllers.NewNoteController(noteService)
 
 	router := gin.Default()
 
 	// TODO: Implement auth middleware for logout and other routes
 
-	routes.RegisterRoutes(router, authController, verificationController, store)
+	routes.RegisterRoutes(router, authController, verificationController, noteController, store)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Failed to start server:", err)
