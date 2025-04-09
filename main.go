@@ -21,8 +21,10 @@ var store *sessions.CookieStore
 
 func main() {
 	// TODO: implement .env.production and .env.development separation
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("RENDER") == "" {
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found, continuing with system env...")
+		}
 	}
 
 	
