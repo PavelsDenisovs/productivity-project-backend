@@ -126,7 +126,7 @@ func (ac *authController) GetCurrentUser(c *gin.Context) {
 	userID := session.Values["user_id"].(uuid.UUID)
   user, err := ac.authService.GetUserByID(userID)
   if err != nil {
-    c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+    c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
     return
   }
 

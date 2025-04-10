@@ -34,7 +34,7 @@ func (nc *noteController) GetAllNotes(c *gin.Context) {
 
 	notes, err := nc.noteService.GetAllNotes(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notes"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
