@@ -39,7 +39,7 @@ func main() {
 		MaxAge:   30 * 86400,
 		HttpOnly: true,
 		Secure:   os.Getenv("RENDER") != "",
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	db, err := repository.InitDatabase()
