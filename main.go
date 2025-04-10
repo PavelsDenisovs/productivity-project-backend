@@ -38,7 +38,7 @@ func main() {
 		Path:     "/",
 		MaxAge:   30 * 86400,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   os.Getenv("RENDER") != "",
 		SameSite: http.SameSiteLaxMode,
 	}
 
