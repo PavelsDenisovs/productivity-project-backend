@@ -46,7 +46,7 @@ func (ac *authController) Register(c *gin.Context) {
 	}
 
 	if err := ac.authService.GenerateAndStoreVerificationCode(request.Email); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

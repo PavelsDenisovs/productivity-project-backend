@@ -119,7 +119,7 @@ func (s *authService) GenerateAndStoreVerificationCode(email string) error {
 	}
 
 	if err := utils.SendVerificationEmail(email, code); err != nil {
-		return fmt.Errorf("failed to store verification code: %w", err)
+		return fmt.Errorf("failed to send verification code: %w", err)
 	}
 
 	return nil
