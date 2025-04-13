@@ -26,7 +26,6 @@ func main() {
 			log.Println("No .env file found, continuing with system env...")
 		}
 	}
-
 	
   gob.Register(uuid.UUID{})
 
@@ -34,12 +33,20 @@ func main() {
 		[]byte(os.Getenv("SESSION_SECRET")),
 	)
 
+	env := os.Getenv("ENV")
+	isProd := env == "production"
+
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   30 * 86400,
 		HttpOnly: true,
-		Secure:   os.Getenv("RENDER") != "",
-		SameSite: http.SameSiteNoneMode,
+		Secure:   isProd,
+		SameSite: func() http.SameSite {
+			if isProd {
+				return http.SameSiteNoneMode
+			}
+			return http.SameSiteLaxMode
+		}(),
 	}
 
 	db, err := repository.InitDatabase()

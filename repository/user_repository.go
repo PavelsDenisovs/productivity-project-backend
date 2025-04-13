@@ -58,7 +58,7 @@ func (r *userRepository) GetUserByID(id uuid.UUID) (*models.User, error) {
 						FROM users WHERE id = $1`
 	err := r.db.QueryRow(query, id).Scan(&user.ID, &user.Email, &user.PasswordHash, &user.IsVerified, &user.CreatedAt, &user.UpdatedAt)
 	if err == sql.ErrNoRows {
-		return nil, errors.New("user not found")
+		return nil, fmt.Errorf("user not found: %v", id)
 	} else if err != nil {
 		return nil, fmt.Errorf("failed to get user by id: %v", err)
 	}
