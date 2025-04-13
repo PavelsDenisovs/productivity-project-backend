@@ -11,12 +11,22 @@ import (
 
 func InitDatabase() (*sql.DB, error) {
   env := os.Getenv("ENV")
+  prod := os.Getenv("PROD_DB_URL")
+  dev := os.Getenv("DEV_DB_URL")
+
   var connStr string
+
   switch env {
   case "production":
-    connStr = os.Getenv("PROD_DB_URL")
+	  if prod == "" {
+		  log.Fatal("Missing PROD_DB_URL in production")
+	  }
+	  connStr = prod
   default:
-    connStr = os.Getenv("DEV_DB_URL")
+	  if dev == "" {
+		  log.Fatal("Missing DEV_DB_URL in development")
+	  }
+	  connStr = dev
   }
 
   if connStr == "" {
