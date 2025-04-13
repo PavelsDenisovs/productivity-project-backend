@@ -23,9 +23,14 @@ func RegisterRoutes(
 		noteController controllers.NoteController,
 		store *sessions.CookieStore,
 	) {
-	frontendURL := os.Getenv("FRONTEND_URL")
-	if frontendURL == "" {
-		frontendURL = "http://localhost:3000"
+	env := os.Getenv("ENV")
+	var frontendURL string
+
+	switch env {
+	case "production":
+		frontendURL = os.Getenv("PROD_FRONTEND_URL")
+	default:
+		frontendURL = os.Getenv("DEV_FRONTEND_URL")
 	}
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{frontendURL},

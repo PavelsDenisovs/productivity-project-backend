@@ -10,7 +10,19 @@ import (
 )
 
 func InitDatabase() (*sql.DB, error) {
-  connStr := os.Getenv("DB_URL")
+  env := os.Getenv("ENV")
+  var connStr string
+  switch env {
+  case "production":
+    connStr = os.Getenv("PROD_DB_URL")
+  default:
+    connStr = os.Getenv("DEV_DB_URL")
+  }
+
+  if connStr == "" {
+		return nil, fmt.Errorf("missing database URL for environment: %s", env)
+	}
+
   db, err := sql.Open("postgres", connStr)
   if err != nil {
     return nil, fmt.Errorf("failed to connect to database: %v", err)
